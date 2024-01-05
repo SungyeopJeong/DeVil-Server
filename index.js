@@ -1,7 +1,10 @@
 const express = require("express");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
-const db = require("../DeVil-Server/db/db");
+const db = require("./db/db");
+const session = require("express-session");
+const passport = require("passport");
+const KakaoStrategy = require("passport-kakao").Strategy;
 
 const app = express();
 const port = 3000;
@@ -34,6 +37,11 @@ app.post("/login", (req, res) => {
       res.send("아이디 또는 비밀번호가 올바르지 않습니다.");
     }
   });
+});
+
+// 메인 라우터
+app.get("/", (req, res) => {
+  res.send("Welcome to your app!");
 });
 
 app.listen(port, () => {
