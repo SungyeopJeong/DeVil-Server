@@ -1,12 +1,15 @@
 const express = require("express");
-const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const db = require("../DeVil-Server/db/db");
+const authRouter = require("./routes/auth");
 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json())
+
+app.use("/api/auth", authRouter);
 
 // 로그인 페이지 렌더링
 app.get("/login", (req, res) => {
