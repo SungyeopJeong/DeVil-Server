@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
-var reqeust = require("request")
+const axios = require('axios')
 
-router.post("/google", (req, res) => {
+router.post("/google", async (req, res) => {
     var token = req.body.token;
-    console.log(token);
-    reqeust.get({ url: "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=" + token }, (_error, _response, body) => {
-        res.json(JSON.parse(body));
+    const url = "https://www.googleapis.com/oauth2/v2/userinfo"
+    const resp = await axios.get(url, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
     })
+    res.json(resp.data)
 });
 
 module.exports = router
