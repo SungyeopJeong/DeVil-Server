@@ -42,7 +42,7 @@ router.post("/google", (req, res) => {
   });
 });
 
-router.post("/kakao", async (req, res) => {
+router.post("/kakao", (req, res) => {
   request.get({
     url: process.env.AUTH_KAKAO_URL,
     headers: {
@@ -54,6 +54,21 @@ router.post("/kakao", async (req, res) => {
     if (!id) res.sendStatus(401);
     else login(id.toString(), parsedBody.properties.nickname, "kakao", res);
   });
+});
+
+router.delete("/signout", (req, res) => {
+  const id = req.body.id;
+
+  if (!id) res.sendStatus(400);
+  else {
+    const sql = "DELETE FROM users WHERE id = ?";
+  
+    db.query(sql, id, (err, result) => {
+      if (err) res.sendStatus(500);
+      else if (result.affectedRows > 0) res.sendStatus(200);
+      else res.sendStatus(404);
+    });
+  }
 });
 
 module.exports = router;
