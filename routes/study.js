@@ -18,6 +18,22 @@ router.get("/", (req, res) => {
   });
 });
 
+function join(userid, studyid, res) {
+  const sql = "INSERT INTO userstudy (userid, studyid) VALUES (?, ?)";
+  
+  db.query(sql, [userid, studyid], (err, _results) => {
+    if (err) res.sendStatus(500);
+    else res.sendStatus(201);
+  });
+}
+
+router.post("/join", (req, res) => {
+  const { userid, studyid } = req.body;
+
+  if (!userid || !studyid) res.sendStatus(400);
+  else join(userid, studyid, res);
+})
+
 //스터디 추가
 router.post("/", (req, res) => {
   const { name, category, description, max, creatorid } = req.body;
@@ -38,7 +54,7 @@ router.post("/", (req, res) => {
       return;
     }
 
-    res.status(201).send("스터디가 성공적으로 추가되었습니다.");
+    join(creatorid, result.insertId, res);
   });
 });
 
@@ -151,21 +167,5 @@ router.patch("/:id", (req, res) => {
     }
   });
 });
-
-function join(userid, studyid, res) {
-  const sql = "INSERT INTO userstudy (userid, studyid) VALUES (?, ?)";
-  
-  db.query(sql, [userid, studyid], (err, _results) => {
-    if (err) res.sendStatus(500);
-    else res.sendStatus(200);
-  });
-}
-
-router.post("/join", (req, res) => {
-  const { userid, studyid } = req.body;
-
-  if (!userid || !studyid) res.sendStatus(400);
-  else join(userid, studyid, res);
-})
 
 module.exports = router;

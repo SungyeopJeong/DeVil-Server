@@ -8,7 +8,7 @@ function signUp(id, username, platform, res) {
   const sql = "INSERT INTO users VALUES (?, ?, ?)"
   db.query(sql, [id, username, platform], (err, _results) => {
     if (err) res.sendStatus(500);
-    else res.status(200).send({ id: id, username: username, platform: platform });
+    else res.status(201).send({ id: id, username: username, platform: platform });
   })
 }
 
