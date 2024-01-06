@@ -11,9 +11,10 @@ router.post("/", (req, res) => {
             "case when userid = ? then true else false end as ismine " +
             "from studychat " +
             "join users on users.id = userid " +
-            "order by studyid, timestamp";
+            "where studyid in (SELECT studyid FROM userstudy WHERE userid = ?) " +
+            "order by studyid, timestamp, studychat.id";
 
-        db.query(sql, id, (err, result) => {
+        db.query(sql, [id, id], (err, result) => {
             console.log(err);
             if (err) res.sendStatus(500);
             else res.status(200).send(result);
