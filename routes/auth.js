@@ -13,7 +13,7 @@ router.post("/google", (req, res) => {
     qs: { access_token: req.body.token },
   }, (_error, _response, body) => {
     const id = JSON.parse(body).sub;
-    if (!id) res.sendStatus(401);
+    if (!id || JSON.parse(body).aud != process.env.AUTH_GOOGLE_CLIENT_ID) res.sendStatus(401);
     else {
       login(id);
       res.sendStatus(200);
