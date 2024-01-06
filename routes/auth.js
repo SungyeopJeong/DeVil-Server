@@ -8,7 +8,7 @@ function signUp(id, username, platform, res) {
   const sql = "INSERT INTO users VALUES (?, ?, ?)"
   db.query(sql, [id, username, platform], (err, _results) => {
     if (err) res.sendStatus(500);
-    else res.status(200).send({id: id, username: username, platform: platform});
+    else res.status(200).send({ id: id, username: username, platform: platform });
   })
 }
 
@@ -17,7 +17,7 @@ function login(id, username, platform, res) {
   db.query(sql, [id, platform], (err, results) => {
     if (err) res.sendStatus(500);
     else if (results.length == 0) signUp(id, username, platform, res);
-    else res.status(200).send({id: id, username: username, platform: platform});
+    else res.status(200).send({ id: id, username: username, platform: platform });
   });
 }
 
@@ -36,7 +36,7 @@ router.post("/google", (req, res) => {
       }, (_error, _response, body) => {
         const name = JSON.parse(body).name;
         if (!name) res.sendStatus(401);
-        login(id, name, "google", res);
+        else login(id, name, "google", res);
       })
     }
   });
@@ -52,9 +52,7 @@ router.post("/kakao", async (req, res) => {
     const parsedBody = JSON.parse(body);
     const id = parsedBody.id;
     if (!id) res.sendStatus(401);
-    else {
-      login(id.toString(), parsedBody.properties.nickname, "kakao", res);
-    }
+    else login(id.toString(), parsedBody.properties.nickname, "kakao", res);
   });
 });
 
