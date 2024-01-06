@@ -3,8 +3,6 @@ const router = express.Router();
 var reqeust = require("request");
 
 const kakao = {
-  clientID: "1018476",
-  clientSecret: "x8X0GCVPL4WUxiIVguCT5qz37hVcMvIP",
   redirectUrl: "http://localhost:3000/kakao",
   userInfoUrl: "https://kapi.kakao.com/v2/user/me",
 };
