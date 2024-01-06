@@ -20,16 +20,16 @@ router.get("/", (req, res) => {
 
 //스터디 추가
 router.post("/", (req, res) => {
-  const { name, category, description, max } = req.body;
+  const { name, category, description, max, creatorid } = req.body;
 
-  if (!name || !category || !description || !max) {
+  if (!name || !category || !description || !max || !creatorid) {
     res.status(400).send("Study name and description are required.");
     return;
   }
 
   const insertQuery =
-    "INSERT INTO studies (name, category, description, max) VALUES (?, ?, ?, ?)";
-  const values = [name, category, description, max];
+    "INSERT INTO studies (name, category, description, max, creatorid) VALUES (?, ?, ?, ?, ?)";
+  const values = [name, category, description, max, creatorid];
 
   db.query(insertQuery, values, (err, result) => {
     if (err) {
