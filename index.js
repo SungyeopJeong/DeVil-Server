@@ -7,7 +7,7 @@ const app = express();
 const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.use("/api/auth", authRouter);
 
@@ -37,6 +37,11 @@ app.post("/login", (req, res) => {
       res.send("아이디 또는 비밀번호가 올바르지 않습니다.");
     }
   });
+});
+
+// 메인 라우터
+app.get("/", (req, res) => {
+  res.send("Welcome to your app!");
 });
 
 app.listen(port, () => {
