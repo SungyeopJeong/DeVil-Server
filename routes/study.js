@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const request = require("request");
 const db = require("../db/db");
 
-router.get("/", (req, res) => {
-  db.query("SELECT * FROM studies", (err, result) => {
+router.get("/", (_req, res) => {
+  db.query("SELECT id, name, category, description, max FROM studies", (err, result) => {
     if (err) {
       console.error("MySQL 오류:", err.message);
       res.status(500).send("서버 오류가 발생했습니다.");
@@ -16,6 +15,22 @@ router.get("/", (req, res) => {
       res.send("data가 없습니다.");
     }
   });
+});
+
+function join(userid, studyid, res) {
+  const sql = "INSERT INTO userstudy (userid, studyid) VALUES (?, ?)";
+
+  db.query(sql, [userid, studyid], (err, _results) => {
+    if (err) res.sendStatus(500);
+    else res.sendStatus(201);
+  });
+}
+
+router.post("/join", (req, res) => {
+  const { userid, studyid } = req.body;
+
+  if (!userid || !studyid) res.sendStatus(400);
+  else join(userid, studyid, res);
 });
 
 //스터디 추가
@@ -38,7 +53,7 @@ router.post("/", (req, res) => {
       return;
     }
 
-    res.status(201).send("스터디가 성공적으로 추가되었습니다.");
+    join(creatorid, result.insertId, res);
   });
 });
 
@@ -51,7 +66,7 @@ router.get("/:id", (req, res) => {
     return;
   }
 
-  const selectQuery = "SELECT * FROM studies WHERE id = ?";
+  const selectQuery = "SELECT id, name, category, description, max FROM studies WHERE id = ?";
   const values = [studyId];
 
   db.query(selectQuery, values, (err, result) => {
@@ -78,7 +93,7 @@ router.get("/category/:category", (req, res) => {
     return;
   }
 
-  const selectByCategoryQuery = "SELECT * FROM studies WHERE category = ?";
+  const selectByCategoryQuery = "SELECT id, name, category, description, max FROM studies WHERE category = ?";
   const valuesByCategory = [category];
 
   db.query(selectByCategoryQuery, valuesByCategory, (err, result) => {
@@ -123,7 +138,7 @@ router.delete("/:id", (req, res) => {
   });
 });
 
-//스터다 수정
+//스터디 수정
 router.patch("/:id", (req, res) => {
   const studyId = req.params.id;
   const { name, category, description, max } = req.body;
