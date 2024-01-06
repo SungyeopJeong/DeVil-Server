@@ -42,7 +42,7 @@ router.post("/google", async (req, res) => {
 router.post("/kakao", async (req, res) => {
   var token = req.body.token;
   console.log(token);
-  request.get(
+  reqeust.get(
     {
       url: kakao.userInfoUrl,
       headers: {
