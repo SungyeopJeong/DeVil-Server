@@ -1,13 +1,50 @@
 const express = require("express");
 const router = express.Router();
-var reqeust = require("request")
+var reqeust = require("request");
+
+const kakao = {
+  clientID: "1018476",
+  clientSecret: "x8X0GCVPL4WUxiIVguCT5qz37hVcMvIP",
+  redirectUrl: "http://localhost:3000/kakao",
+  userInfoUrl: "https://kapi.kakao.com/v2/user/me",
+};
 
 router.post("/google", (req, res) => {
-    var token = req.body.token;
-    console.log(token);
-    reqeust.get({ url: "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=" + token }, (_error, _response, body) => {
-        res.json(JSON.parse(body));
-    })
+  var token = req.body.token;
+  console.log(token);
+  reqeust.get(
+    {
+      url:
+        "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=" + token,
+    },
+    (_error, _response, body) => {
+      res.json(JSON.parse(body));
+    }
+  );
 });
 
-module.exports = router
+router.post("/kakao", async (req, res) => {
+  var token = req.body.token;
+  console.log(token);
+  request.get(
+    {
+      url: kakao.userInfoUrl,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+    (error, _response, body) => {
+      if (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+        return;
+      }
+
+      const userInfo = JSON.parse(body);
+      console.log(userInfo);
+      res.json(userInfo);
+    }
+  );
+});
+
+module.exports = router;
