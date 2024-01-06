@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../db/db");
 
 router.get("/", (_req, res) => {
-  db.query("SELECT * FROM studies", (err, result) => {
+  db.query("SELECT id, name, category, description, max FROM studies", (err, result) => {
     if (err) {
       console.error("MySQL 오류:", err.message);
       res.status(500).send("서버 오류가 발생했습니다.");
@@ -66,7 +66,7 @@ router.get("/:id", (req, res) => {
     return;
   }
 
-  const selectQuery = "SELECT * FROM studies WHERE id = ?";
+  const selectQuery = "SELECT id, name, category, description, max FROM studies WHERE id = ?";
   const values = [studyId];
 
   db.query(selectQuery, values, (err, result) => {
@@ -93,7 +93,7 @@ router.get("/category/:category", (req, res) => {
     return;
   }
 
-  const selectByCategoryQuery = "SELECT * FROM studies WHERE category = ?";
+  const selectByCategoryQuery = "SELECT id, name, category, description, max FROM studies WHERE category = ?";
   const valuesByCategory = [category];
 
   db.query(selectByCategoryQuery, valuesByCategory, (err, result) => {
