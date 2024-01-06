@@ -1,64 +1,40 @@
 const express = require("express");
 const router = express.Router();
-var reqeust = require("request");
+const request = require("request");
+require("dotenv").config()
 
-const kakao = {
-  redirectUrl: "http://localhost:3000/kakao",
-  userInfoUrl: "https://kapi.kakao.com/v2/user/me",
-};
+function login(id) {
+
+}
 
 router.post("/google", (req, res) => {
-  var token = req.body.token;
-  console.log(token);
-  reqeust.get(
-    {
-      url:
-        "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=" + token,
-    },
-    (_error, _response, body) => {
-      res.json(JSON.parse(body));
+  request.get({
+    url: process.env.AUTH_GOOGLE_URL,
+    qs: { access_token: req.body.token },
+  }, (_error, _response, body) => {
+    const id = JSON.parse(body).sub;
+    if (!id) res.sendStatus(401);
+    else {
+      login(id);
+      res.sendStatus(200);
     }
-  );
-});
-
-const axios = require("axios");
-
-router.post("/google", async (req, res) => {
-  var token = req.body.token;
-  console.log(token);
-  const url = "https://www.googleapis.com/oauth2/v2/userinfo";
-  try {
-    const resp = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    res.json(resp.data);
-  } catch (error) {
-    res.sendStatus(401);
-  }
+  });
 });
 
 router.post("/kakao", async (req, res) => {
-  var token = req.body.token;
-  console.log(token);
-  reqeust.get(
-    {
-      url: kakao.userInfoUrl,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  request.get({
+    url: process.env.AUTH_KAKAO_URL,
+    headers: {
+      Authorization: `Bearer ${req.body.token}`,
     },
-    (error, _response, body) => {
-      if (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
-        return;
-      }
-
-      const userInfo = JSON.parse(body);
-      console.log(userInfo);
-      res.json(userInfo);
+  }, (_error, _response, body) => {
+    const id = JSON.parse(body).id;
+    if (!id) res.sendStatus(401);
+    else {
+      login(id.toString());
+      res.sendStatus(200);
     }
-  );
+  });
 });
 
 module.exports = router;
