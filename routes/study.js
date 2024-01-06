@@ -152,4 +152,20 @@ router.patch("/:id", (req, res) => {
   });
 });
 
+function join(userid, studyid, res) {
+  const sql = "INSERT INTO userstudy (userid, studyid) VALUES (?, ?)";
+  
+  db.query(sql, [userid, studyid], (err, _results) => {
+    if (err) res.sendStatus(500);
+    else res.sendStatus(200);
+  });
+}
+
+router.post("/join", (req, res) => {
+  const { userid, studyid } = req.body;
+
+  if (!userid || !studyid) res.sendStatus(400);
+  else join(userid, studyid, res);
+})
+
 module.exports = router;
