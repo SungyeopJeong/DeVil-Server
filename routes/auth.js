@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const request = require("request");
-const db = require("../db/db")
-require("dotenv").config()
+const db = require("../db/db");
+require("dotenv").config();
 
 function signUp(id, username, platform, res) {
-  const sql = "INSERT INTO users VALUES (?, ?, ?)"
+  const sql = "INSERT INTO users VALUES (?, ?, ?)";
   db.query(sql, [id, username, platform], (err, _results) => {
     if (err) res.sendStatus(500);
     else res.status(201).send({ id: id, username: username, platform: platform });
@@ -62,7 +62,7 @@ router.delete("/signout", (req, res) => {
   if (!id) res.sendStatus(400);
   else {
     const sql = "DELETE FROM users WHERE id = ?";
-  
+
     db.query(sql, id, (err, result) => {
       if (err) res.sendStatus(500);
       else if (result.affectedRows > 0) res.sendStatus(200);

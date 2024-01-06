@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const request = require("request");
 const db = require("../db/db");
 
-router.get("/", (req, res) => {
+router.get("/", (_req, res) => {
   db.query("SELECT * FROM studies", (err, result) => {
     if (err) {
       console.error("MySQL 오류:", err.message);
@@ -20,7 +19,7 @@ router.get("/", (req, res) => {
 
 function join(userid, studyid, res) {
   const sql = "INSERT INTO userstudy (userid, studyid) VALUES (?, ?)";
-  
+
   db.query(sql, [userid, studyid], (err, _results) => {
     if (err) res.sendStatus(500);
     else res.sendStatus(201);
@@ -32,7 +31,7 @@ router.post("/join", (req, res) => {
 
   if (!userid || !studyid) res.sendStatus(400);
   else join(userid, studyid, res);
-})
+});
 
 //스터디 추가
 router.post("/", (req, res) => {
@@ -139,7 +138,7 @@ router.delete("/:id", (req, res) => {
   });
 });
 
-//스터다 수정
+//스터디 수정
 router.patch("/:id", (req, res) => {
   const studyId = req.params.id;
   const { name, category, description, max } = req.body;
