@@ -4,20 +4,30 @@ const request = require("request");
 const db = require("../db/db");
 require("dotenv").config();
 
-function signUp(id, username, platform, res) {
+function signUp(id, username, platform, profileUrl, res) {
   const sql = "INSERT INTO users VALUES (?, ?, ?)";
   db.query(sql, [id, username, platform], (err, _results) => {
     if (err) res.sendStatus(500);
-    else res.status(201).send({ id: id, username: username, platform: platform });
+    else res.status(201).send({
+      id: id,
+      username: username,
+      platform: platform,
+      profileUrl: profileUrl,
+    });
   })
 }
 
-function login(id, username, platform, res) {
+function login(id, username, platform, profileUrl, res) {
   const sql = "SELECT * FROM users WHERE id = ? AND platform = ?";
   db.query(sql, [id, platform], (err, results) => {
     if (err) res.sendStatus(500);
-    else if (results.length == 0) signUp(id, username, platform, res);
-    else res.status(200).send({ id: id, username: username, platform: platform });
+    else if (results.length == 0) signUp(id, username, platform, profileUrl, res);
+    else res.status(200).send({
+      id: id,
+      username: username,
+      platform: platform,
+      profileUrl: profileUrl,
+    });
   });
 }
 
@@ -34,9 +44,10 @@ router.post("/google", (req, res) => {
         url: process.env.AUTH_GOOGLE_USER_URL,
         qs: { access_token: req.body.token },
       }, (_error, _response, body) => {
-        const name = JSON.parse(body).name;
+        const parsedBody = JSON.parse(body);
+        const name = parsedBody.name;
         if (!name) res.sendStatus(401);
-        else login(id, name, "google", res);
+        else login(id, name, "google", parsedBody.picture, res);
       })
     }
   });
@@ -52,7 +63,7 @@ router.post("/kakao", (req, res) => {
     const parsedBody = JSON.parse(body);
     const id = parsedBody.id;
     if (!id) res.sendStatus(401);
-    else login(id.toString(), parsedBody.properties.nickname, "kakao", res);
+    else login(id.toString(), parsedBody.properties.nickname, "kakao", parsedBody.properties.thumbnail_image, res);
   });
 });
 
