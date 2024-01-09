@@ -1,5 +1,4 @@
 const express = require("express");
-const router = express.Router();
 const db = require("../db/db");
 
 const app = express();
@@ -32,4 +31,4 @@ io.on("connection", (socket) => {
   });
 });
 
-module.exports = server;
+module.exports = io;
