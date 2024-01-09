@@ -59,17 +59,21 @@ router.post("/", (req, res) => {
   });
 });
 
-//스터디 상세 정보 불러오기
-router.get("/:id", (req, res) => {
+//스터디 추가 정보 불러오기
+router.post("/:id", (req, res) => {
   const studyId = req.params.id;
+  const userId = req.body.id;
 
   if (!studyId) {
     res.status(400).send("Study ID is required.");
     return;
   }
 
-  const selectQuery = "SELECT id, name, category, description, max FROM studies WHERE id = ?";
-  const values = [studyId];
+  const subQuery = "SELECT userid, case when creatorId = userid then true else false end as iscreator " +
+    "FROM studies join userstudy on id = studyid WHERE id = ?";
+  const selectQuery = "SELECT username, iscreator, case when userid = ? then true else false end as isme " +
+    `FROM (${subQuery}) as joinlist join users on id = userid`;
+  const values = [userId, studyId];
 
   db.query(selectQuery, values, (err, result) => {
     if (err) {
@@ -79,7 +83,7 @@ router.get("/:id", (req, res) => {
     }
 
     if (result.length > 0) {
-      res.send(result[0]);
+      res.send(result);
     } else {
       res.status(404).send("해당 ID의 스터디를 찾을 수 없습니다.");
     }
