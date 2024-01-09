@@ -20,7 +20,6 @@ router.post("/", (req, res) => {
         res.sendStatus(500);
         console.log(err);
       } else {
-        io.emit("chat update", result);
         res.status(200).send(result);
       }
     });
