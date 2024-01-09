@@ -4,8 +4,8 @@ const db = require("../db/db");
 
 router.get("/", (_req, res) => {
   db.query(
-    "SELECT id, name, category, description, count(userid) as now, max " +
-      "FROM studies left outer join userstudy on studyid = id group by id",
+    "SELECT id, name, category, description, count(userid) AS now, max " +
+      "FROM studies LEFT OUTER JOIN userstudy ON studyid = id GROUP BY id ORDER BY id DESC",
     (err, result) => {
       if (err) {
         console.error("MySQL 오류:", err.message);
@@ -73,11 +73,11 @@ router.post("/:id", (req, res) => {
   }
 
   const subQuery =
-    "SELECT userid, case when creatorId = userid then true else false end as iscreator " +
-    "FROM studies join userstudy on id = studyid WHERE id = ?";
+    "SELECT userid, CASE WHEN creatorId = userid THEN TRUE ELSE FALSE END AS iscreator " +
+    "FROM studies JOIN userstudy ON id = studyid WHERE id = ?";
   const selectQuery =
-    "SELECT username, iscreator, case when userid = ? then true else false end as isme " +
-    `FROM (${subQuery}) as joinlist join users on id = userid`;
+    "SELECT username, iscreator, CASE WHEN userid = ? THEN TRUE ELSE FALSE END AS isme " +
+    `FROM (${subQuery}) AS joinlist JOIN users ON id = userid`;
   const values = [userId, studyId];
 
   db.query(selectQuery, values, (err, result) => {
