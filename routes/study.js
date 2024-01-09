@@ -3,18 +3,20 @@ const router = express.Router();
 const db = require("../db/db");
 
 router.get("/", (_req, res) => {
-  db.query("SELECT id, name, category, description, max FROM studies", (err, result) => {
-    if (err) {
-      console.error("MySQL 오류:", err.message);
-      res.status(500).send("서버 오류가 발생했습니다.");
-      return;
-    }
-    if (result.length > 0) {
-      res.send(result);
-    } else {
-      res.send("data가 없습니다.");
-    }
-  });
+  db.query("SELECT id, name, category, description, count(userid) as now, max " +
+    "FROM studies left outer join userstudy on studyid = id group by id",
+    (err, result) => {
+      if (err) {
+        console.error("MySQL 오류:", err.message);
+        res.status(500).send("서버 오류가 발생했습니다.");
+        return;
+      }
+      if (result.length > 0) {
+        res.send(result);
+      } else {
+        res.send("data가 없습니다.");
+      }
+    });
 });
 
 function join(userid, studyid, res) {
@@ -57,17 +59,21 @@ router.post("/", (req, res) => {
   });
 });
 
-//스터디 상세 정보 불러오기
-router.get("/:id", (req, res) => {
+//스터디 추가 정보 불러오기
+router.post("/:id", (req, res) => {
   const studyId = req.params.id;
+  const userId = req.body.id;
 
   if (!studyId) {
     res.status(400).send("Study ID is required.");
     return;
   }
 
-  const selectQuery = "SELECT id, name, category, description, max FROM studies WHERE id = ?";
-  const values = [studyId];
+  const subQuery = "SELECT userid, case when creatorId = userid then true else false end as iscreator " +
+    "FROM studies join userstudy on id = studyid WHERE id = ?";
+  const selectQuery = "SELECT username, iscreator, case when userid = ? then true else false end as isme " +
+    `FROM (${subQuery}) as joinlist join users on id = userid`;
+  const values = [userId, studyId];
 
   db.query(selectQuery, values, (err, result) => {
     if (err) {
@@ -77,7 +83,7 @@ router.get("/:id", (req, res) => {
     }
 
     if (result.length > 0) {
-      res.send(result[0]);
+      res.send(result);
     } else {
       res.status(404).send("해당 ID의 스터디를 찾을 수 없습니다.");
     }
