@@ -1,12 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db/db");
-const socketIO = require("socket.io");
-const http = require("http");
-
-const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
 
 router.post("/", (req, res) => {
   const id = req.body.id;
@@ -33,4 +27,4 @@ router.post("/", (req, res) => {
   }
 });
 
-module.exports = { router, io };
+module.exports = router;
