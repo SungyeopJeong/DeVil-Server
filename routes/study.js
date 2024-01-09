@@ -3,18 +3,20 @@ const router = express.Router();
 const db = require("../db/db");
 
 router.get("/", (_req, res) => {
-  db.query("SELECT id, name, category, description, max FROM studies", (err, result) => {
-    if (err) {
-      console.error("MySQL 오류:", err.message);
-      res.status(500).send("서버 오류가 발생했습니다.");
-      return;
-    }
-    if (result.length > 0) {
-      res.send(result);
-    } else {
-      res.send("data가 없습니다.");
-    }
-  });
+  db.query("SELECT id, name, category, description, count(userid) as now, max " +
+    "FROM studies left outer join userstudy on studyid = id group by id",
+    (err, result) => {
+      if (err) {
+        console.error("MySQL 오류:", err.message);
+        res.status(500).send("서버 오류가 발생했습니다.");
+        return;
+      }
+      if (result.length > 0) {
+        res.send(result);
+      } else {
+        res.send("data가 없습니다.");
+      }
+    });
 });
 
 function join(userid, studyid, res) {
