@@ -7,10 +7,10 @@ router.post("/studies", (req, res) => {
 
     if (!id) res.sendStatus(400);
     else {
-        const sql = "SELECT id, name, category, description, count(userid) as now, max, " +
-            "case when creatorid = ? then true else false end as canDelete " +
-            "FROM studies left outer join userstudy on studyid = id " +
-            "WHERE id in (SELECT studyid FROM userstudy WHERE userid = ?) group by id";
+        const sql = "SELECT id, name, category, description, count(userid) AS now, max, " +
+            "CASE WHEN creatorid = ? THEN TRUE ELSE FALSE END AS canDelete " +
+            "FROM studies LEFT OUTER JOIN userstudy ON studyid = id " +
+            "WHERE id IN (SELECT studyid FROM userstudy WHERE userid = ?) GROUP BY id ORDER BY id DESC";
 
         db.query(sql, [id, id], (err, result) => {
             if (err) res.sendStatus(500);
