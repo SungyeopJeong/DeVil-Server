@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use("/api/auth", authRouter);
 app.use("/api/study", studyRouter);
 app.use("/api/user", userRouter);
-app.use("/api/chat", chatRouter);
+app.use("/api/chat", chatRouter.router);
 
 // 메인 라우터
 app.get("/", (_req, res) => {

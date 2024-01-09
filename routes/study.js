@@ -3,8 +3,9 @@ const router = express.Router();
 const db = require("../db/db");
 
 router.get("/", (_req, res) => {
-  db.query("SELECT id, name, category, description, count(userid) as now, max " +
-    "FROM studies left outer join userstudy on studyid = id group by id",
+  db.query(
+    "SELECT id, name, category, description, count(userid) as now, max " +
+      "FROM studies left outer join userstudy on studyid = id group by id",
     (err, result) => {
       if (err) {
         console.error("MySQL 오류:", err.message);
@@ -16,7 +17,8 @@ router.get("/", (_req, res) => {
       } else {
         res.send("data가 없습니다.");
       }
-    });
+    }
+  );
 });
 
 function join(userid, studyid, res) {
@@ -60,6 +62,7 @@ router.post("/", (req, res) => {
 });
 
 //스터디 추가 정보 불러오기
+//스터디에 가입한 사람들 정보를 불러옴. username, iscreator(만든사람항목에는 1), isme(지금 접속한 userid인지)
 router.post("/:id", (req, res) => {
   const studyId = req.params.id;
   const userId = req.body.id;
@@ -69,9 +72,11 @@ router.post("/:id", (req, res) => {
     return;
   }
 
-  const subQuery = "SELECT userid, case when creatorId = userid then true else false end as iscreator " +
+  const subQuery =
+    "SELECT userid, case when creatorId = userid then true else false end as iscreator " +
     "FROM studies join userstudy on id = studyid WHERE id = ?";
-  const selectQuery = "SELECT username, iscreator, case when userid = ? then true else false end as isme " +
+  const selectQuery =
+    "SELECT username, iscreator, case when userid = ? then true else false end as isme " +
     `FROM (${subQuery}) as joinlist join users on id = userid`;
   const values = [userId, studyId];
 
@@ -99,7 +104,8 @@ router.get("/category/:category", (req, res) => {
     return;
   }
 
-  const selectByCategoryQuery = "SELECT id, name, category, description, max FROM studies WHERE category = ?";
+  const selectByCategoryQuery =
+    "SELECT id, name, category, description, max FROM studies WHERE category = ?";
   const valuesByCategory = [category];
 
   db.query(selectByCategoryQuery, valuesByCategory, (err, result) => {
