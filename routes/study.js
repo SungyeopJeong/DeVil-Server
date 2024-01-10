@@ -5,7 +5,7 @@ const db = require("../db/db");
 router.get("/", (_req, res) => {
   db.query(
     "SELECT id, name, category, description, count(userid) AS now, max " +
-      "FROM studies LEFT OUTER JOIN userstudy ON studyid = id GROUP BY id ORDER BY id DESC",
+    "FROM studies LEFT OUTER JOIN userstudy ON studyid = id GROUP BY id ORDER BY id DESC",
     (err, result) => {
       if (err) {
         console.error("MySQL 오류:", err.message);
@@ -26,7 +26,7 @@ function join(userid, studyid, res) {
 
   db.query(sql, [userid, studyid], (err, _results) => {
     if (err) res.sendStatus(500);
-    else res.sendStatus(201);
+    else res.status(201).send(studyid);
   });
 }
 

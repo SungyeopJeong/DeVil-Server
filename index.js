@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
           "join users on users.id = userid " +
           "where studychat.id = ? ";
         db.query(query, [result.insertId], (err, result) => {
-          if (!err) io.emit("study0", result[0]);
+          if (!err) io.emit(`study${data.studyid}`, result[0]);
         });
       }
     });
